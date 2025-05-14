@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
+import { useAuth } from './hooks/useSupabase';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
@@ -13,6 +14,17 @@ import PublicDocument from './pages/PublicDocument';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser } = useApp();
+  const { loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-gray-700">Loading...</div>
+        </div>
+      </div>
+    );
+  }
   
   if (!currentUser) {
     return <Navigate to="/login" replace />;
@@ -23,10 +35,21 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function AppRoutes() {
   const { initialize } = useApp();
+  const { loading } = useAuth();
   
   useEffect(() => {
     initialize();
   }, [initialize]);
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-gray-700">Loading...</div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <Routes>
